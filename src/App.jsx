@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { generatePokemon } from './util';
+import PokemonCard from './PokemonCard';
 
 function App() {
   const [pokemon, setPokemon] = useState([]);
@@ -90,12 +91,16 @@ function App() {
         )}
       </div>
 
-      {pokemon.map((card) => (
-        <div key={card.id} onClick={() => handlePokemonClick(card.id)}>
-          <img src={card.imageUrl} alt={card.name} />
-          <p>{card.name}</p>
-        </div>
-      ))}
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {pokemon.map((card) => (
+          <PokemonCard
+            key={card.id}
+            imageUrl={card.imageUrl}
+            name={card.name}
+            onClick={() => handlePokemonClick(card.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
