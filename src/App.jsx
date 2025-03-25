@@ -47,18 +47,48 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Memory Card Game</h1>
-      <p>Test your memory to the limit</p>
-      <button onClick={resetGame} disabled={loading}>
-        {loading ? 'Loading...' : 'New Game'}
-      </button>
-
-      {gameOver && (
-        <div>
-          <h2>Game Over!</h2>
+    <div className='min-h-screen bg-gradient-to-b from-indigo-800 to-purple-900 p-6 text-white'>
+      <div className='max-w-6xl mx-auto'>
+        <div className='flex flex-col md:flex-row justify-between items-center mb-8'>
+          <div>
+            <h1 className='text-4xl font-bold mb-2'>Memory Card Game</h1>
+            <p className='text-lg text-indigo-200'>
+              Test your memory to the limit
+            </p>
+          </div>
+          <div className='mt-4 md:mt-0'>
+            {' '}
+            <p className='text-xl'>
+              High Score: <span className='font-bold text-yellow-300'>0</span>
+            </p>
+            <p className='text-xl'>
+              Current Score:{' '}
+              <span className='font-bold text-green-300'>
+                {clickedCardIds.length}
+              </span>
+            </p>
+            <button
+              className='mt-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-bold disabled:opacity-50'
+              onClick={resetGame}
+              disabled={loading}>
+              {loading ? 'Loading...' : 'New Game'}
+            </button>
+          </div>
         </div>
-      )}
+        {gameOver && (
+          <div className='fixed inset-0 bg-black opacity-80 flex items-center justify-center z-50 '>
+            <div className='bg-indigo-700 p-8 rounded-xl shadow-2xl text-center'>
+              {' '}
+              <h2 className='text-3xl font-bold mb-4'>Game Over!</h2>
+              <button
+                onClick={resetGame}
+                className='px-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-bold'>
+                Play Again
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {pokemon.map((card) => (
         <div key={card.id} onClick={() => handlePokemonClick(card.id)}>
