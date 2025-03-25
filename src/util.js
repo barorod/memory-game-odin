@@ -1,4 +1,4 @@
-export const generatePokemon = async (pokemonCount = 16) => {
+export const generatePokemon = async (pokemonCount = 16, batchSize = 4) => {
   try {
     const maxPokemonId = 1025;
     const randomPokemonIds = new Set();
@@ -8,18 +8,33 @@ export const generatePokemon = async (pokemonCount = 16) => {
       randomPokemonIds.add(randomizer);
     }
 
-    const pokemonPromises = Array.from(randomPokemonIds).map(async (id) => {
-      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-      const data = await res.json();
+    const ids = Array.from(randomPokemonIds);
+    const result = [];
 
-      return {
-        id: data.id,
-        name: data.name,
-        imageUrl: data.sprites.front_default,
-      };
-    });
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
 
-    return await Promise.all(pokemonPromises);
+      const batchResults = await Promise.all(
+        batch.map(async (id) => {
+          const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+          const data = await res.json();
+
+          return {
+            id: data.id,
+            name: data.name,
+            imageUrl: data.sprites.front_default,
+          };
+        })
+      );
+
+      result.push(...batchResults);
+
+      if (i + batchSize < ids.length) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    return result;
   } catch (error) {
     console.log('Error fetching:', error);
     return [];
