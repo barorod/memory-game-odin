@@ -14,7 +14,7 @@ function App() {
       setLoading(true);
 
       try {
-        const data = await generatePokemon();
+        const data = await generatePokemon(16, 4, 500);
         const shuffled = data.sort(() => Math.random() - 0.5);
         setPokemon(shuffled);
 
@@ -39,15 +39,20 @@ function App() {
     }
   }, [gameOver, clickedCardIds]);
 
-  const resetGame = () => {
+  const resetGame = async () => {
     setLoading(true);
     setClickedCardIds([]);
     setGameOver(false);
 
-    setPokemon((prevPokemon) =>
-      [...prevPokemon].sort(() => Math.random() - 0.5)
-    );
-    setLoading(false);
+    try {
+      const data = await generatePokemon(16, 4, 100);
+      const shuffled = data.sort(() => Math.random() - 0.5);
+      setPokemon(shuffled);
+    } catch (error) {
+      console.log('Error fetching: ', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePokemonClick = (id) => {
