@@ -1,4 +1,15 @@
 export const generatePokemon = async (pokemonCount = 16, batchSize = 4) => {
+  const localPokemon = localStorage.getItem('localPokemon');
+
+  if (localPokemon) {
+    const { timestamp, data } = JSON.parse(localPokemon);
+    const oneHour = 60 * 60 * 1000;
+
+    if (Date.now() - timestamp < oneHour) {
+      return data;
+    }
+  }
+
   try {
     const maxPokemonId = 1025;
     const randomPokemonIds = new Set();
@@ -33,6 +44,11 @@ export const generatePokemon = async (pokemonCount = 16, batchSize = 4) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     }
+
+    localStorage.setItem(
+      'localPokemon',
+      JSON.stringify({ timestamp: Date.now(), data: result })
+    );
 
     return result;
   } catch (error) {

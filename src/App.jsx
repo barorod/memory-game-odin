@@ -9,28 +9,45 @@ function App() {
   const [gameOver, setGameOver] = useState(false);
   const highScore = useRef(0);
 
-  const fetchPokemons = async () => {
+  useEffect(() => {
+    const loadPokemon = async () => {
+      setLoading(true);
+
+      try {
+        const data = await generatePokemon();
+        const shuffled = data.sort(() => Math.random() - 0.5);
+        setPokemon(shuffled);
+
+        const savedHighScore = localStorage.getItem('highScore');
+        if (savedHighScore) {
+          highScore.current = parseInt(savedHighScore, 10);
+        }
+      } catch (error) {
+        console.log('Error fetching: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPokemon();
+  }, []);
+
+  useEffect(() => {
+    if (gameOver && clickedCardIds.length > highScore.current) {
+      highScore.current = clickedCardIds.length;
+      localStorage.setItem('highScore', highScore.current.toString());
+    }
+  }, [gameOver, clickedCardIds]);
+
+  const resetGame = () => {
     setLoading(true);
     setClickedCardIds([]);
     setGameOver(false);
 
-    try {
-      const data = await generatePokemon();
-      const shuffled = data.sort(() => Math.random() - 0.5);
-      setPokemon(shuffled);
-    } catch (error) {
-      console.log('Error fetching: ', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPokemons();
-  }, []);
-
-  const resetGame = () => {
-    fetchPokemons();
+    setPokemon((prevPokemon) =>
+      [...prevPokemon].sort(() => Math.random() - 0.5)
+    );
+    setLoading(false);
   };
 
   const handlePokemonClick = (id) => {
