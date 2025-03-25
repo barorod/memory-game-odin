@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { generatePokemon } from './util';
 import PokemonCard from './PokemonCard';
 
@@ -7,6 +7,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [clickedCardIds, setClickedCardIds] = useState([]);
   const [gameOver, setGameOver] = useState(false);
+  const highScore = useRef(0);
 
   const fetchPokemons = async () => {
     setLoading(true);
@@ -36,6 +37,10 @@ function App() {
     if (gameOver || loading) return;
 
     if (clickedCardIds.includes(id)) {
+      if (clickedCardIds.length > highScore.current) {
+        highScore.current = clickedCardIds.length;
+      }
+
       setGameOver(true);
       return;
     }
@@ -60,7 +65,10 @@ function App() {
           <div className='mt-4 md:mt-0'>
             {' '}
             <p className='text-xl'>
-              High Score: <span className='font-bold text-yellow-300'>0</span>
+              High Score:{' '}
+              <span className='font-bold text-yellow-300'>
+                {highScore.current}
+              </span>
             </p>
             <p className='text-xl'>
               Current Score:{' '}
